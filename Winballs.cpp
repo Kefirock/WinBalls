@@ -98,6 +98,21 @@ bool isCollision(Ball *ball, Ball *ball2)
     return false;
 }
 
+void resolveByImpulse(Ball* ball, Ball* ball2)
+{
+    float vx1 = ball->vx;
+    float vx2 = ball2->vx;
+
+    float vy1 = ball->vy;
+    float vy2 = ball2->vy;
+
+    ball->vy = vy2;
+    ball2->vy = vy1;
+
+    ball->vx = vx2;
+    ball2->vx = vx1;
+}
+
 void collision(Ball* ball, Ball* ball2, int* life)
 {
     if (!isCollision(ball, ball2))
@@ -131,17 +146,7 @@ void collision(Ball* ball, Ball* ball2, int* life)
             std::cout << "Life:" << *life << std::endl;
         }
 
-    float vx1 = ball->vx;
-    float vx2 = ball2->vx;
-
-    float vy1 = ball->vy;
-    float vy2 = ball2->vy;
-
-    ball->vy = vy2;
-    ball2->vy = vy1;
-
-    ball->vx = vx2;
-    ball2->vx = vx1;
+    resolveByImpulse(ball, ball2);
 }
 
 
