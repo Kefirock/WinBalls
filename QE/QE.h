@@ -177,11 +177,3 @@ void print(Data data)
     cout << "" << endl;
 
 }
-
-
-int main()
-{
-    Data data(7,0,2);
-    calculateX(&data);
-    print(data);
-}
