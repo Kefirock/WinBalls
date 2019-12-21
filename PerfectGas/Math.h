@@ -1,3 +1,10 @@
+#include "TXLib.h"
+#include <iostream>
+
+using std::cout;
+using std::cin;
+using std::endl;
+
 class Vector2f
 {
     public:
@@ -60,7 +67,7 @@ class Vector2f
         //normalize
         Vector2f normalize ()
         {
-            return Vector2f(x / sqrt(x * x + y * y), y / sqrt(x * x + y * y));
+            return Vector2f(x / len(), y / len());
         }
 
 };

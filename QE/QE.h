@@ -40,6 +40,30 @@ bool isEqual(double n, double m)
     return 0;
 }
 
+void discriminant(Data *data)
+{
+    double D = pow(data->b, 2) - 4 * data->a * data->c;
+    if (D > 0)
+    {
+        data->x1 = (-data->b + sqrt(D)) / (2 * data->a);
+        data->x2 = (-data->b - sqrt(D)) / (2 * data->a);
+
+        data->result = 2;
+    }
+
+    else if (D == 0)
+    {
+        data->x1 = (-data->b) / (2 * data->a);
+
+        data->result = 1;
+    }
+
+    else
+    {
+        data->result = 0;
+    }
+}
+
 void calculateX(Data *data)
 {
     double a = data->a;
@@ -50,15 +74,7 @@ void calculateX(Data *data)
     {
         if (isEqual(b,0))
         {
-            if (isEqual(c,0))
-            {
-                data->result = 0;
-            }
-
-            if (!isEqual(c,0))
-            {
-                data->result = 0;
-            }
+            data->result = 0;
         }
 
         if (!isEqual(b,0))
@@ -81,71 +97,7 @@ void calculateX(Data *data)
 
     if (!isEqual(a,0))
     {
-        if (!isEqual(b,0))
-        {
-            if (!isEqual(c,0))
-            {
-                double D = pow(data->b, 2) - 4 * data->a * data->c;
-                if (D > 0)
-                {
-                    data->x1 = (-data->b + sqrt(D)) / (2 * data->a);
-                    data->x2 = (-data->b - sqrt(D)) / (2 * data->a);
-
-                    data->result = 2;
-                }
-
-                else if (D == 0)
-                {
-                    data->x1 = (-data->b) / (2 * data->a);
-
-                    data->result = 1;
-                }
-
-                else
-                {
-                    data->result = 0;
-                }
-            }
-
-            if (isEqual(c,0))
-            {
-                double D = pow(data->b, 2) - 4 * data->a * data->c;
-                if (D > 0)
-                {
-                    data->x1 = (-data->b + sqrt(D)) / (2 * data->a);
-                    data->x2 = (-data->b - sqrt(D)) / (2 * data->a);
-
-                    data->result = 2;
-                }
-            }
-        }
-
-        if (isEqual(b,0))
-        {
-            if (isEqual(c,0))
-            {
-                data->x1 = 0;
-
-                data->result = 1;
-            }
-
-            if (!isEqual(c,0))
-            {
-                double n = (-data->c/data->a);
-
-                if (n > 0);
-                {
-                    data->x1 = sqrt(n);
-
-                    data->result = 1;
-                }
-
-                if (n < 0);
-                {
-                    data->result = 0;
-                }
-            }
-        }
+        discriminant(data);
     }
 }
 

@@ -1,10 +1,4 @@
-#include "TXLib.h"
 #include "Math.h"
-#include <iostream>
-
-using std::cout;
-using std::cin;
-using std::endl;
 
 struct Ball
 {
@@ -15,196 +9,194 @@ struct Ball
     int red;
     int green;
     int blue;
+
+    void controls(Ball* ball)
+    {
+        if (GetAsyncKeyState (VK_LEFT))
+        {
+            if (ball->position.x > -10)
+            {
+                ball->position.x = ball->position.x - 1;
+            }
+        }
+
+        if (GetAsyncKeyState (VK_RIGHT))
+        {
+            if (ball->position.x < 10)
+            {
+                ball->position.x = ball->position.x + 1;
+            }
+        }
+
+        if (GetAsyncKeyState (VK_UP))
+        {
+            if (ball->position.y > -10)
+            {
+                ball->position.y = ball->position.y - 1;
+            }
+        }
+
+        if (GetAsyncKeyState (VK_DOWN))
+        {
+            if (ball->position.y < 10)
+            {
+                ball->position.y = ball->position.y + 1;
+            }
+        }
+    }
+
+    void drawBall()
+    {
+        for (int i = 0; i < radius; i++)
+        {
+            txSetFillColor(RGB(i * red / radius, i * green / radius, i * blue / radius));
+
+            txSetColor(RGB(i * red / radius, i * green / radius, i * blue / radius));
+
+            txCircle(position.x + i/2, position.y - i/2, radius - i);
+        }
+    }
+
+    void changeCoordinate(float coordinate, int type)
+    {
+        if (type == 1)
+
+        {
+            float S = coordinate - position.x + radius;
+            float xTime = S / v.x;
+
+            position.y = position.y + xTime * (v.y);
+            position.x = coordinate + radius;
+        }
+
+        if (type == 2)
+
+        {
+            float S = position.x + radius - coordinate;
+            float xTime = S / v.x;
+            position.y = position.y + xTime * v.y;
+            position.x = coordinate - radius;
+        }
+
+        if (type == 3)
+
+        {
+            float S = position.y + radius - coordinate;
+
+            float yTime = S / v.y;
+            position.x = position.x + yTime * v.x;
+            position.y = coordinate - radius;
+        }
+
+        if (type == 4)
+        {
+            float S = coordinate - position.y + radius;
+            float yTime = S / v.y;
+            position.x = position.x + yTime * v.x;
+            position.y = coordinate + radius;
+        }
+    }
+
+    void moveBall(float dt)
+    {
+
+        position = position + v * dt;
+
+        if (position.x - radius < 0)
+        {
+            changeCoordinate(0, 1);
+            v.x = -v.x;
+        }
+
+        if (position.x + radius > 1280)
+        {
+            changeCoordinate(1280, 2);
+            v.x = -v.x;
+        }
+
+        if (position.y + radius > 720)
+        {
+            changeCoordinate(720, 3);
+            v.y = -v.y;
+        }
+
+        if (position.y - radius < 0)
+        {
+            changeCoordinate(0, 4);
+            v.y = -v.y;
+        }
+    }
+
+    void resolveByImpulse(Ball* ball2)
+    {
+        //V
+        Vector2f ball1v = v;
+        Vector2f ball2v = ball2->v;
+
+        v = ball2v;
+        ball2->v = ball1v;
+
+        //Position
+
+        float len = (ball2->position - position).len();
+        float shift = radius + ball2->radius - len;
+
+        position = position - (ball2->position - position).normalize() * shift;
+    }
+
+    bool isCollision(Ball *ball2)
+    {
+        if (radius + ball2->radius > (position - ball2->position).len())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    void collision(Ball* ball2)
+    {
+        if (!isCollision(ball2))
+            return;
+
+        resolveByImpulse(ball2);
+    }
+
 };
 
-void controls(Ball* ball)
+struct BallManager
 {
-    if (GetAsyncKeyState (VK_LEFT))
+    void create(Ball* ball, int count)
     {
-        if (ball->v.x > -10)
+        int i = 0;
+        while (i < count)
         {
-            ball->v.x = ball->v.x - 1;
+            ball[i].drawBall();
+            i++;
         }
     }
 
-    if (GetAsyncKeyState (VK_RIGHT))
+    void move(Ball* ball, float dt, int count)
     {
-        if (ball->v.x < 10)
+        int i = 0;
+        while (i < count)
         {
-            ball->v.x = ball->v.x + 1;
+            ball[i].moveBall(dt);
+            i++;
         }
     }
 
-    if (GetAsyncKeyState (VK_UP))
+
+    void collide(Ball* ball, float dt, int count)
     {
-        if (ball->v.y > -10)
-        {
-            ball->v.y = ball->v.y - 1;
-        }
+        for (int i = 0; i < count; i++)
+            for (int u = i; u < count; u++)
+                if (&ball[i] != &ball[u])
+                {
+                    ball[i].collision(&ball[u]);
+                }
     }
+};
 
-    if (GetAsyncKeyState (VK_DOWN))
-    {
-        if (ball->v.y < 10)
-        {
-            ball->v.y = ball->v.y + 1;
-        }
-    }
-}
-
-
-void createBall(Ball ball)
-{
-    for (int i = 0; i < ball.radius; i++)
-    {
-        txSetFillColor(RGB(i * ball.red / ball.radius, i * ball.green / ball.radius, i * ball.blue / ball.radius));
-
-        txSetColor(RGB(i * ball.red / ball.radius, i * ball.green / ball.radius, i * ball.blue / ball.radius));
-
-        txCircle(ball.position.x + i/2, ball.position.y - i/2, ball.radius - i);
-    }
-}
-
-void changeCoordinate(Ball *ball, float coordinate, int type)
-{
-    if (type == 1)
-
-    {
-        float S = coordinate - ball->position.x + ball->radius;
-        float xTime = S / (ball->v.x);
-
-        ball->position.y = ball->position.y + xTime * (ball->v.y);
-        ball->position.x = coordinate + ball->radius;
-    }
-
-    if (type == 2)
-
-    {
-        float S = ball->position.x + ball->radius - coordinate;
-        float xTime = S / (ball->v.x);
-        ball->position.y = ball->position.y + xTime * (ball->v.y);
-        ball->position.x = coordinate - ball->radius;
-    }
-
-    if (type == 3)
-
-    {
-        float S = ball->position.y + ball->radius - coordinate;
-
-        float yTime = S / (ball->v.y);
-        ball->position.x = ball->position.x + yTime * (ball->v.x);
-        ball->position.y = coordinate - ball->radius;
-    }
-
-    if (type == 4)
-    {
-        float S = coordinate - ball->position.y + ball->radius;
-        float yTime = S / (ball->v.y);
-        ball->position.x = ball->position.x + yTime * (ball->v.x);
-        ball->position.y = coordinate + ball->radius;
-    }
-}
-
-
-void moveBall(Ball *ball, float dt)
-{
-
-    ball->position = ball->position + ball->v * dt;
-
-    if (ball->position.x - ball->radius < 0)
-    {
-        changeCoordinate(ball, 0, 1);
-        ball->v.x = -ball->v.x;
-    }
-
-    if (ball->position.x + ball->radius > 1280)
-    {
-        changeCoordinate(ball, 1280, 2);
-        ball->v.x = -ball->v.x;
-    }
-
-    if (ball->position.y + ball->radius > 720)
-    {
-        changeCoordinate(ball, 720, 3);
-        ball->v.y = -ball->v.y;
-    }
-
-    if (ball->position.y - ball->radius < 0)
-    {
-        changeCoordinate(ball, 0, 4);
-        ball->v.y = -ball->v.y;
-    }
-
-}
-
-bool isCollision(Ball *ball, Ball *ball2)
-{
-    if (ball->radius + ball2->radius > (ball->position - ball2->position).len())
-    {
-        //cout << "Ah shit, here we go again" << endl;
-        return true;
-    }
-    return false;
-}
-
-void resolveByImpulse(Ball* ball, Ball* ball2)
-{
-    //V
-    Vector2f ball1v = ball->v;
-    Vector2f ball2v = ball2->v;
-
-    ball->v = ball2v;
-    ball2->v = ball1v;
-
-    //Position
-
-    float len = (ball2->position - ball->position).len();
-    float shift = ball->radius + ball2->radius - len;
-    //cout << "Len:" << len << endl;
-    //cout << "Shift:" << shift << endl;
-
-    ball->position = ball-> position - (ball2->position - ball->position).normalize() * shift;
-}
-
-void collision(Ball* ball, Ball* ball2)
-{
-    if (!isCollision(ball, ball2))
-        return;
-
-    resolveByImpulse(ball, ball2);
-}
-
-
-void create(Ball* ball, int count)
-{
-    int i = 0;
-    while (i < count)
-    {
-        createBall(ball[i]);
-        i++;
-    }
-}
-
-void move(Ball* ball, float dt, int count)
-{
-    int i = 0;
-    while (i < count)
-    {
-        moveBall(&ball[i], dt);
-        i++;
-    }
-}
-
-
-void collide(Ball* ball, float dt, int count)
-{
-    for (int i = 0; i < count; i++)
-        for (int u = i; u < count; u++)
-            if (&ball[i] != &ball[u])
-            {
-                collision(&ball[i], &ball[u]);
-            }
-}
 
 int main()
 {
@@ -219,6 +211,7 @@ int main()
     int radius = 20;
 
     Ball gas[ballCount];
+    BallManager manager;
 
     for (int i = 0; i < ballCount; i++)
     {
@@ -233,18 +226,18 @@ int main()
 
     while(life > 0)
     {
-        move(gas, dt, ballCount);
+        manager.move(gas, dt, ballCount);
 
         txBegin ();
 
         txSetFillColor(RGB(0,0,0));
         txClear();
 
-        create(gas, ballCount);
+        manager.create(gas, ballCount);
 
         txEnd ();
 
-        collide(gas, dt, ballCount);
+        manager.collide(gas, dt, ballCount);
     }
 
     return 0;
