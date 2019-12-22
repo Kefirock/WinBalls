@@ -1,0 +1,1 @@
+g++ PerfectGas.cpp -o PerfectGas -lsfml-system -lsfml-window -lsfml-graphics
