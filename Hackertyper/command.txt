@@ -1,0 +1,1 @@
+g++ Hackertyper.cpp -o Hackertyper -lsfml-system -lsfml-window -lsfml-graphics
