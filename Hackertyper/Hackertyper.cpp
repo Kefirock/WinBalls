@@ -15,16 +15,16 @@ struct Text
         words.setCharacterSize(24);
     };
 
-    /*
-    int fileLen(std::ifstream *fd, int visibleLen)
+    
+    int fileLen(std::ifstream *fd)
     {
-        fd-> seekg(0, std::ios::visibleLen);
-        int len = file.tellg();
+        fd-> seekg(0, std::ios::end);
+        int len = fd->tellg();
         fd-> seekg(0, std::ios::beg);
 
         return len;
     }
-    */
+    
 
     void print(const char* something)
     {
@@ -32,24 +32,20 @@ struct Text
     }
 
     void import()
-    {       
-        //int len = fileLen(&file);
-
-        char buff[50];
+    {
         std::ifstream file("resouces/text.txt");
 
-        file.getline(buff, 50);
-        
-        //file.read(buffer, len);
+        int len = fileLen(file);
+        char *buffer = new char[len];
 
+        file.read(buffer, len);
         file.close();
-        
-        text.words = buffer.getline(buffer, 1);
-        
-        delete[] buffer;
+
+        delete [] buffer;
+
+         
     }
 };
-
 
 int main()
 {
@@ -61,7 +57,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width, height), "Pentagon files");
 
     text.import();
-    //text.print("");
+    text.print("It's working");
 
    while (true)
    {
