@@ -1,9 +1,9 @@
 {
     "files.associations": {
-        "*.tcc": "cpp",
-        "typeinfo": "cpp",
+        "iosfwd": "cpp",
         "array": "cpp",
         "atomic": "cpp",
+        "*.tcc": "cpp",
         "cctype": "cpp",
         "clocale": "cpp",
         "cmath": "cpp",
@@ -33,7 +33,6 @@
         "utility": "cpp",
         "fstream": "cpp",
         "initializer_list": "cpp",
-        "iosfwd": "cpp",
         "iostream": "cpp",
         "istream": "cpp",
         "limits": "cpp",
@@ -41,6 +40,7 @@
         "ostream": "cpp",
         "sstream": "cpp",
         "stdexcept": "cpp",
-        "streambuf": "cpp"
+        "streambuf": "cpp",
+        "typeinfo": "cpp"
     }
 }

@@ -1,0 +1,3 @@
+gcc Variable.cpp -o Variable
+
+g++ UTest.cpp -o UTest

@@ -6,6 +6,7 @@ struct Text
 {
     sf::Font font;
     sf::Text words;
+    char word;
 
     Text()
     {
@@ -25,25 +26,32 @@ struct Text
         return len;
     }
     
-
+    /*
     void print(const char* something)
     {
         words.setString(something);
+    }
+    */
+
+    void print()
+    {
+        word.setString();
     }
 
     void import()
     {
         std::ifstream file("resouces/text.txt");
 
-        int len = fileLen(file);
+        //int len = fileLen(file);
+        int len = 100;
+
         char *buffer = new char[len];
 
         file.read(buffer, len);
         file.close();
 
-        delete [] buffer;
-
-         
+        word = *buffer;
+        delete [] buffer;    
     }
 };
 
@@ -57,7 +65,7 @@ int main()
     sf::RenderWindow window(sf::VideoMode(width, height), "Pentagon files");
 
     text.import();
-    text.print("It's working");
+    text.print();
 
    while (true)
    {
