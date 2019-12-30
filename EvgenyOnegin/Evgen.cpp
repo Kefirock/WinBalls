@@ -17,8 +17,6 @@ struct FileManager
         size = ftell(file);
         rewind(file);
 
-        std::cout << "size:" << size << "\n"<< std::endl;
-
         return size;
     }
 
@@ -59,7 +57,6 @@ struct FileManager
             if (buffer[i] == '\0')
             {
                 strings[n] = &buffer[i - k];
-                //std::cout << "n = "<< n << ", k = " << k << "\n" << std::endl;
                 n = n + 1;
                 k = 0;
             }
@@ -70,35 +67,38 @@ struct FileManager
             } 
         }
         stringsCount = p;
-        //delete[] buffer;
     }
 
     bool compareStrings(int str1, int str2)
     {
-        for (int i = 0; i < stringsCount; i++)
+        int i = strlen(strings[str1]);
+        int j = strlen(strings[str2]);
+
+        while (i >= 0 && j >= 0)
         {
-            if (strings[str1][i] < strings[str2][i])
+            if (strings[str1][i] > strings[str2][j])
             {
                 return false;
             }
 
-            if (strings[str1][i] > strings[str2][i])
+            if (strings[str1][i] < strings[str2][j])
             {
                 return true;
             }
+
+            i = i - 1;
+            j = j - 1;
         }
         return true;
     }
 
     void changeOrder()
-   
-    {
+    { 
         for (int i = 0; i < stringsCount; i++)
         {
             for (int j = 0; j < stringsCount - 1; j++)
             {
-                //std::cout <<  strings[i] << ", " << strings[j] << "" << std::endl;
-                if(!compareStrings(i, j))
+                if (!compareStrings(i, j))
                 {
                     char* ifake = strings[i];
                     strings[i] = strings[j];
@@ -107,7 +107,6 @@ struct FileManager
             }
         }
     }
-    
     
     void print()
     {   
@@ -121,13 +120,13 @@ struct FileManager
     {
         file = fopen("output.txt", "w");
         for (int i = 0; i < stringsCount; i++)
-        {
+        {   
             fprintf(file, strings[i]);
             fprintf(file, "\n");
         }
+        delete[] buffer;
     }
 };
-    
 
 int main()
 {
@@ -138,7 +137,6 @@ int main()
     file.changeOrder();
     file.print();
     file.write();    
-    //file.compareStrings(file.strings[0][5], file.strings[5][10]);
 
     return 0;
 }
