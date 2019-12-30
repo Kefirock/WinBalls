@@ -3,14 +3,11 @@
 #include <strings.h>
 #include <cstring>
 
-struct FileManager
+struct FileReader
 {
     FILE* file;
-    char* buffer;
-    char** strings;
     int size;
-    int stringsCount;
-     
+
     int filelen()
     {
         fseek(file, 0, SEEK_END);
@@ -20,7 +17,7 @@ struct FileManager
         return size;
     }
 
-    void read()
+    void read(char* *buffer)
     {
         file = fopen("file.txt", "r");
 
@@ -31,16 +28,28 @@ struct FileManager
         else
         {
             size = filelen();   
-            buffer = new char[size];
-            fread(buffer, sizeof(char), size, file);
+            *buffer = new char[size];
+            fread(*buffer, sizeof(char), size, file);
             fclose (file);    
         }
     }
+};
 
-    void slice()
+struct FileManager
+{
+    char* buffer;
+    char** strings;
+    int stringsCount;
+
+    void readFile(FileReader *reader)
+    {
+        reader->read(&buffer);
+    }
+
+    void slice(FileReader reader)
     {
         int p = 0;
-        for (int i = 0; i < size; i = i + 1)
+        for (int i = 0; i < reader.size; i = i + 1)
         {
             if (buffer[i] == '\n')
             {   
@@ -52,7 +61,7 @@ struct FileManager
 
         int n = 0;
         int k = 0;
-        for (int i = 0; n < p && i < size; i = i + 1)
+        for (int i = 0; n < p && i < reader.size; i = i + 1)
         {
             if (buffer[i] == '\0')
             {
@@ -69,19 +78,19 @@ struct FileManager
         stringsCount = p;
     }
 
-    bool compareStrings(int str1, int str2)
+    bool compareStrings(char* str1, char* str2)
     {
-        int i = strlen(strings[str1]);
-        int j = strlen(strings[str2]);
+        int i = strlen(str1);
+        int j = strlen(str2);
 
         while (i >= 0 && j >= 0)
         {
-            if (strings[str1][i] > strings[str2][j])
+            if (str1[i] > str2[j])
             {
                 return false;
             }
 
-            if (strings[str1][i] < strings[str2][j])
+            if (str1[i] < str2[j])
             {
                 return true;
             }
@@ -98,7 +107,7 @@ struct FileManager
         {
             for (int j = 0; j < stringsCount - 1; j++)
             {
-                if (!compareStrings(i, j))
+                if (!compareStrings(strings[i], strings[j]))
                 {
                     char* ifake = strings[i];
                     strings[i] = strings[j];
@@ -107,22 +116,14 @@ struct FileManager
             }
         }
     }
-    
-    void print()
-    {   
-        for (int i = 0; i < stringsCount; i = i + 1)
-        {
-        std::cout << strings[i] << std::endl;     
-        }       
-    }
 
-    void write()
+    void write(FileReader *reader)
     {
-        file = fopen("output.txt", "w");
+        reader->file = fopen("output.txt", "w");
         for (int i = 0; i < stringsCount; i++)
         {   
-            fprintf(file, strings[i]);
-            fprintf(file, "\n");
+            fprintf(reader->file, strings[i]);
+            fprintf(reader->file, "\n");
         }
         delete[] buffer;
     }
@@ -130,13 +131,12 @@ struct FileManager
 
 int main()
 {
-    FileManager file;
-    file.read();
-    file.slice();
-
-    file.changeOrder();
-    file.print();
-    file.write();    
+    FileManager text;
+    FileReader reader;
+    text.readFile(&reader);
+    text.slice(reader);
+    text.changeOrder();
+    text.write(&reader);    
 
     return 0;
 }
