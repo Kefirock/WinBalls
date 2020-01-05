@@ -126,6 +126,7 @@ struct FileManager
             fprintf(reader->file, "\n");
         }
         delete[] buffer;
+        delete[] strings;
     }
 };
 
