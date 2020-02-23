@@ -203,7 +203,7 @@ struct List
         }
 
         // Элемент списка
-        int operator[](int index)
+        int& operator[](int index)
         {
             std::cout << "INDEX : " << index << std::endl;
             Node* indx = head;
@@ -222,7 +222,7 @@ struct List
                     }
                 }
                 std::cout << "[Value]: " << indx -> value << std::endl;
-                return indx -> value;          
+                return indx -> value;  
             }
 
 
@@ -270,8 +270,11 @@ int main()
     MyList.printAll();
     MyList.size();
     MyList[-1];
+    std::cout << MyList[0] << std::endl;
     MyList[0];
     MyList[2];
+    MyList[0] = 55;
+    MyList[0];
 
     return 0;
 }
