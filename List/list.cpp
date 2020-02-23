@@ -202,6 +202,40 @@ struct List
             return 0;
         }
 
+        // Элемент списка
+        int operator[](int index)
+        {
+            std::cout << "INDEX : " << index << std::endl;
+            Node* indx = head;
+            Node* prev;
+            int len = length();
+
+            if (index >= 0 and index < len)
+            {
+                for (int i = 0; i < index; i++)
+                {
+                    std::cout << "INDX: " << indx -> value << std::endl;
+                    
+                    if (index > 1)
+                    {
+                        indx = indx -> next;
+                    }
+                }
+                std::cout << "[Value]: " << indx -> value << std::endl;
+                return indx -> value;          
+            }
+
+
+            else if (index >= len)
+            {
+                std::cout << "WARNING: Index is out of range, index: " << index << std::endl;
+            }
+            
+            else if (index < 0)
+            {
+                std::cout << "WARNING: Index < 0, index: " << index << std::endl;
+            }
+        }
 };
 
 int main()
@@ -235,6 +269,9 @@ int main()
     MyList.remove(1);
     MyList.printAll();
     MyList.size();
+    MyList[-1];
+    MyList[0];
+    MyList[2];
 
     return 0;
 }
